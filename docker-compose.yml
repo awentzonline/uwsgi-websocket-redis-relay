@@ -2,17 +2,17 @@ redis:
   image: redis
 
 webclient:
-  image: nginx
+  build: ./client
   volumes:
-    - ./client:/usr/share/nginx/html:ro
+    - ./client/dist:/usr/share/nginx/html:ro
   ports:
     - "80:80"
 
-websockets:
-  build: ./server
+redis-ws-relay:
+  build: ./redis-ws-relay
   command: uwsgi --ini uwsgi.ini
   volumes:
-    - ./server:/code
+    - ./redis-ws-relay:/code
   ports:
     - "9000:9000"
   links:
@@ -20,7 +20,7 @@ websockets:
 
 workers:
   build: ./workers
-  command: python echo.py
+  command: python thingzone.py
   volumes:
     - ./workers:/code
   links:
