@@ -1,0 +1,27 @@
+redis:
+  image: redis
+
+webclient:
+  image: nginx
+  volumes:
+    - ./client:/usr/share/nginx/html:ro
+  ports:
+    - "80:80"
+
+websockets:
+  build: ./server
+  command: uwsgi --ini uwsgi.ini
+  volumes:
+    - ./server:/code
+  ports:
+    - "9000:9000"
+  links:
+    - redis
+
+workers:
+  build: ./workers
+  command: python echo.py
+  volumes:
+    - ./workers:/code
+  links:
+    - redis
